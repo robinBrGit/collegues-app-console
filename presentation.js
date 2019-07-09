@@ -15,6 +15,10 @@ function start() {
                 findColleguesParNom();
                 break;
             }
+            case '2' : {
+                createCollegue();
+                break;
+            }
             case '99' : {
                 rl.close();
                 break;
@@ -32,6 +36,30 @@ function findColleguesParNom() {
             start();
         });
     });
+}
+
+function createCollegue() {
+    var collegue = {};
+    rl.question('nom :',function (nom) {
+        collegue.nom = nom;
+        rl.question('prenom :',function (prenom) {
+            collegue.prenoms = prenom;
+            rl.question('email :',function (email) {
+                collegue.email = email;
+                rl.question('date de naissance :',function (dateDeNaissance) {
+                    collegue.dateDeNaissance = dateDeNaissance;
+                    rl.question('Url de la photo :',function (photoUrl) {
+                        collegue.photoUrl = photoUrl;
+                        service.creerCollegue(collegue,function (res,body) {
+                            console.log(res);
+                            console.log(body);
+                            start();
+                        });
+                    })
+                })
+            })
+        })
+    })
 }
 
 function afficherCollegue(collegue){

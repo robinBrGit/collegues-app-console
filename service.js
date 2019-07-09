@@ -19,14 +19,14 @@ function rechercherColleguesParNom(nomRecherche, callback) {
     });
 }
 
-function creerCollegue(nom,prenoms,email,dateDeNaissance,photoUrl,callback){
+function creerCollegue(collegue,callback){
 
     request(`https://robin-br-collegues-api.herokuapp.com/collegues`, {method:'POST',json: true,body: {
-            "nom" : nom,
-            "prenoms" : prenoms,
-            "email" : email,
-            "dateDeNaissance" : dateDeNaissance,
-            "photoUrl" : photoUrl
+            "nom" : collegue.nom,
+            "prenoms" : collegue.prenoms,
+            "email" : collegue.email,
+            "dateDeNaissance" : collegue.dateDeNaissance,
+            "photoUrl" : collegue.photoUrl
         }}, function (err, res, body) {
         callback(res,body);
     });
@@ -34,3 +34,4 @@ function creerCollegue(nom,prenoms,email,dateDeNaissance,photoUrl,callback){
 }
 
 exports.rechercherColleguesParNom = rechercherColleguesParNom;
+exports.creerCollegue = creerCollegue;
