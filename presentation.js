@@ -9,6 +9,7 @@ function start() {
     console.log("1. Rechercher un collègue par nom");
     console.log("2. Créer un collègue par nom");
     console.log("3. Modfier email");
+    console.log("4. Modfier photoUrl");
     console.log("99. Sortir");
     rl.question('Choix : ', function (saisie) {
         saisie = saisie.trim();
@@ -23,6 +24,10 @@ function start() {
             }
             case '3' :{
                 modifierEmail();
+                break;
+            }
+            case '4' : {
+                modifierPhotoUrl()
                 break;
             }
             case '99' : {
@@ -100,6 +105,37 @@ function modifierEmail() {
                 });
             }
             modifierEmail();
+        });
+
+    })
+}
+function modifierPhotoUrl() {
+    var photoUrl;
+    var nom;
+    rl.question('nom :',function (saisie) {
+        nom = saisie;
+        service.rechercherColleguesParNom(nom, function (colleguesTrouves) {
+            if(colleguesTrouves instanceof Array){
+                colleguesTrouves.forEach(function (value, index, array) {
+                    console.log(index+": "+value.nom+" "+value.prenoms+" "+value.dateDeNaissance)
+                });
+                rl.question('id :',function (saisie) {
+                    var id = saisie;
+                    if(id<colleguesTrouves.length){
+                        var matricule = colleguesTrouves[id].matricule;
+                        rl.question('photoUrl :',function (saisie) {
+                            photoUrl = saisie;
+                            service.modifierPhotoUrl(matricule,photoUrl,function (res,body) {
+                                console.log(res.statusCode);
+                                console.log(body);
+                                start();
+                            });
+                        })
+                    }
+                    modifierPhotoUrl();
+                });
+            }
+            modifierPhotoUrl();
         });
 
     })

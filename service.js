@@ -48,6 +48,15 @@ function modifierEmail(matricule,email,callback){
     });
 }
 
+function modifierPhotoUrl(matricule,photoUrl,callback){
+    request(`https://robin-br-collegues-api.herokuapp.com/collegues/${matricule}`, {method:'PATCH',json: true,body: {
+            "photoUrl" : photoUrl
+        }}, function (err, res, body) {
+        callback(res,body);
+    });
+}
+
 exports.rechercherColleguesParNom = rechercherColleguesParNom;
 exports.creerCollegue = creerCollegue;
 exports.modifierEmail = modifierEmail;
+exports.modifierPhotoUrl = modifierPhotoUrl;
