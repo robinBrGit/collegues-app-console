@@ -1,3 +1,4 @@
 var presentation = require('./presentation');
 console.log('** Administration Collegues **');
-presentation.start();
+const pres = new presentation.Presentation();
+pres.start();

@@ -1,62 +1,46 @@
-var request = require('request');
+var request = require('request-promise-native');
+
+class Service {
 
 
-function rechercherColleguesParNom(nomRecherche, callback) {
+     rechercherParNom(nomRecherche) {
 
-    request(`https://robin-br-collegues-api.herokuapp.com/collegues?nom=${nomRecherche}`, {json: true}, function (err, res, body) {
+        return request(`https://robin-br-collegues-api.herokuapp.com/collegues?nom=${nomRecherche}`, {json: true})
+            .then(maticules => Promise.all(maticules.map(value => request(`https://robin-br-collegues-api.herokuapp.com/collegues/${value}`, {json: true}))));
 
-        var tableauColleguesTrouves = body;
-        var tableauCollegues = Array();
-        var i = 0;
-        if(tableauColleguesTrouves.length > 0){
-            tableauColleguesTrouves.forEach(function (value) {
-                request(`https://robin-br-collegues-api.herokuapp.com/collegues/${value}`, {json: true}, function (err, res, body) {
-                    tableauCollegues[i]=body;
-                    i++;
-                    if(tableauColleguesTrouves.length === i)callback(tableauCollegues);
-                });
-            })
-        }
-        else {
-            request(`https://robin-br-collegues-api.herokuapp.com/collegues/`, {json: true}, function (err, res, body) {
-                callback(body);
-            });
-        }
+        // retourne une promesse
+    }
 
-    });
+    creerCollegue(collegue) {
+
+        return request(`https://robin-br-collegues-api.herokuapp.com/collegues`, {
+            method: 'POST', json: true, body: {
+                "nom": collegue.nom,
+                "prenoms": collegue.prenoms,
+                "email": collegue.email,
+                "dateDeNaissance": collegue.dateDeNaissance,
+                "photoUrl": collegue.photoUrl
+            }
+        });
+    }
+
+    modfierEmail(matricule,email){
+        return request(`https://robin-br-collegues-api.herokuapp.com/collegues/${matricule}`, {
+            method: 'PATCH', json: true, body: {
+                "email": email
+            }
+        });
+    }
+
+    modfierPhotoUrl(matricule, photoUrl) {
+        return request(`https://robin-br-collegues-api.herokuapp.com/collegues/${matricule}`, {
+            method: 'PATCH', json: true, body: {
+                "photoUrl": photoUrl
+            }
+        });
+    }
+
 }
 
-function creerCollegue(collegue,callback){
+exports.Service = Service;
 
-    request(`https://robin-br-collegues-api.herokuapp.com/collegues`, {method:'POST',json: true,body: {
-            "nom" : collegue.nom,
-            "prenoms" : collegue.prenoms,
-            "email" : collegue.email,
-            "dateDeNaissance" : collegue.dateDeNaissance,
-            "photoUrl" : collegue.photoUrl
-        }}, function (err, res, body) {
-        callback(res,body);
-    });
-
-}
-
-function modifierEmail(matricule,email,callback){
-    request(`https://robin-br-collegues-api.herokuapp.com/collegues/${matricule}`, {method:'PATCH',json: true,body: {
-            "email" : email
-        }}, function (err, res, body) {
-        callback(res,body);
-    });
-}
-
-function modifierPhotoUrl(matricule,photoUrl,callback){
-    request(`https://robin-br-collegues-api.herokuapp.com/collegues/${matricule}`, {method:'PATCH',json: true,body: {
-            "photoUrl" : photoUrl
-        }}, function (err, res, body) {
-        callback(res,body);
-    });
-}
-
-exports.rechercherColleguesParNom = rechercherColleguesParNom;
-exports.creerCollegue = creerCollegue;
-exports.modifierEmail = modifierEmail;
-exports.modifierPhotoUrl = modifierPhotoUrl;
