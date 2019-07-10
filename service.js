@@ -8,13 +8,20 @@ function rechercherColleguesParNom(nomRecherche, callback) {
         var tableauColleguesTrouves = body;
         var tableauCollegues = Array();
         var i = 0;
-        tableauColleguesTrouves.forEach(function (value) {
-            request(`https://robin-br-collegues-api.herokuapp.com/collegues/${value}`, {json: true}, function (err, res, body) {
+        if(tableauColleguesTrouves.length > 0){
+            tableauColleguesTrouves.forEach(function (value) {
+                request(`https://robin-br-collegues-api.herokuapp.com/collegues/${value}`, {json: true}, function (err, res, body) {
                     tableauCollegues[i]=body;
                     i++;
                     if(tableauColleguesTrouves.length === i)callback(tableauCollegues);
+                });
+            })
+        }
+        else {
+            request(`https://robin-br-collegues-api.herokuapp.com/collegues/`, {json: true}, function (err, res, body) {
+                callback(body);
             });
-        })
+        }
 
     });
 }
@@ -33,5 +40,14 @@ function creerCollegue(collegue,callback){
 
 }
 
+function modifierEmail(matricule,email,callback){
+    request(`https://robin-br-collegues-api.herokuapp.com/collegues/${matricule}`, {method:'PATCH',json: true,body: {
+            "email" : email
+        }}, function (err, res, body) {
+        callback(res,body);
+    });
+}
+
 exports.rechercherColleguesParNom = rechercherColleguesParNom;
 exports.creerCollegue = creerCollegue;
+exports.modifierEmail = modifierEmail;
