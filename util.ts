@@ -21,4 +21,3 @@ export default class Readline {
     }
 }
 
-exports.Readline = Readline;

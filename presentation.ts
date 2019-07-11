@@ -11,6 +11,14 @@ export default class Presentation {
         this._service = new Service();
         this._rl = new Readline();
     }
+    init():void{
+        this._service.testService().then(()=>{
+            this.start();
+        }).catch(()=>{
+            console.log('Api insdisponible');
+            this._rl.close();
+        });
+    }
 
     start(): void {
         console.log(`1. Rechercher un collègue par nom
@@ -78,7 +86,7 @@ export default class Presentation {
             console.log(body);
             this.start();
         }).catch(err => {
-            console.log(err);
+            console.log(err.message);
             this.createCollegue();
         });
     }
