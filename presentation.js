@@ -30,7 +30,7 @@ class Presentation {
                     break;
                 }
                 case '4' : {
-                    this.modifierPhotoUrl()
+                    this.modifierPhotoUrl();
                     break;
                 }
                 case '99' : {
@@ -46,7 +46,7 @@ class Presentation {
             return this.service.rechercherParNom(saisie);
         }).then(collegues=>{
             collegues.forEach(collegue => {
-                this.afficherCollegue(collegue);
+                Presentation.afficherCollegue(collegue);
             });
             this.start();
         }).catch(err => console.log(err));
@@ -86,7 +86,7 @@ class Presentation {
         }).then(collegues=>{
             listCollegues = collegues;
             collegues.forEach(function (value, index) {
-                console.log(index + ": " + value.nom + " " + value.prenoms + " " + value.dateDeNaissance);
+                console.log(`${index}: ${value.nom} ${value.prenoms} ${value.dateDeNaissance}`);
             });
             return this.rl.question('id :');
         }).then(id=>{
@@ -99,43 +99,41 @@ class Presentation {
         }).then(body => {
             console.log(body);
             this.start();
-        });
-    }
-
-    modifierPhotoUrl() {
-        var photoUrl;
-        var nom;
-        rl.question('nom :', function (saisie) {
-            nom = saisie;
-            service.rechercherColleguesParNom(nom, function (colleguesTrouves) {
-                if (colleguesTrouves instanceof Array) {
-                    colleguesTrouves.forEach(function (value, index, array) {
-                        console.log(index + ": " + value.nom + " " + value.prenoms + " " + value.dateDeNaissance)
-                    });
-                    rl.question('id :', function (saisie) {
-                        var id = saisie;
-                        if (id < colleguesTrouves.length) {
-                            var matricule = colleguesTrouves[id].matricule;
-                            rl.question('photoUrl :', function (saisie) {
-                                photoUrl = saisie;
-                                service.modifierPhotoUrl(matricule, photoUrl, function (res, body) {
-                                    console.log(res.statusCode);
-                                    console.log(body);
-                                    start();
-                                });
-                            })
-                        }
-                        modifierPhotoUrl();
-                    });
-                }
-                modifierPhotoUrl();
-            });
-
+        }).catch(err=>{
+            console.log(err.message);
+            this.modifierEmail();
         })
     }
 
-    afficherCollegue(collegue) {
-        console.log(collegue.nom + ' ' + collegue.prenoms + ' ' + collegue.email + ' (' + collegue.dateDeNaissance + ')');
+    modifierPhotoUrl() {
+        let matricule;
+        let listCollegues = [];
+        this.rl.question('nom :').then(nom=>{
+            return this.service.rechercherParNom(nom);
+        }).then(collegues=>{
+            listCollegues = collegues;
+            collegues.forEach(function (value, index) {
+                console.log(`${index}: ${value.nom} ${value.prenoms} ${value.dateDeNaissance}`);
+            });
+            return this.rl.question('id :');
+        }).then(id=>{
+            if(id<listCollegues.length){
+                matricule = listCollegues[id].matricule;
+            }
+            return this.rl.question('photo url :');
+        }).then(photoUrl=>{
+            return this.service.modfierPhotoUrl(matricule,photoUrl);
+        }).then(body => {
+            console.log(body);
+            this.start();
+        }).catch(err=>{
+            console.log(err.message);
+            this.modifierPhotoUrl();
+        })
+    }
+
+    static afficherCollegue(collegue) {
+        console.log(`${collegue.nom} ${collegue.prenoms} ${collegue.email} (${collegue.dateDeNaissance})`);
     }
 
 }
