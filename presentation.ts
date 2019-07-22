@@ -12,12 +12,30 @@ export default class Presentation {
         this._rl = new Readline();
     }
     init():void{
-        this._service.testService().then(()=>{
-            this.start();
-        }).catch(()=>{
-            console.log('Api insdisponible');
-            this._rl.close();
-        });
+        this.connection();
+        // this._service.testService().then(()=>{
+        //     this.start();
+        // }).catch(err=>{
+        //     console.log(err);
+        //     this._rl.close();
+        // });
+    }
+
+    connection():void {
+        console.log("Identification :");
+        let email:string;
+        let mdp:string;
+        this._rl.question('email :').then((saisie:string)=>{
+            email = saisie;
+            return this._rl.question('mdp :');
+        }).then((saisie:string)=>{
+            mdp=saisie;
+            this._service.auth(email,mdp).then(res=>{
+                this.start();
+            }).catch(err=>{
+                console.log('ko',err);
+            })
+        })
     }
 
     start(): void {
@@ -47,6 +65,7 @@ export default class Presentation {
                 }
                 case '99' : {
                     this._rl.close();
+                    this._service.logout();
                     break;
                 }
             }
